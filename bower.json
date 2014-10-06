@@ -1,0 +1,26 @@
+{
+  "name": "JSConnect4",
+  "version": "0.0.0",
+  "authors": [
+    "Florian Loch <florian.loch@gmail.com>"
+  ],
+  "description": "A JavaScript based frontend for Connect4 webservice. Part of our student researchpapaer",
+  "main": "index.html",
+  "moduleType": [
+    "es6"
+  ],
+  "license": "GPL",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1",
+    "jquery-ui": "~1.11.1",
+    "buzz": "~1.1.6"
+  }
+}

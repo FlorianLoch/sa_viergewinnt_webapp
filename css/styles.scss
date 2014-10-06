@@ -1,0 +1,74 @@
+$width: 100px;
+$height: 100px;
+$margin: 5px;
+$slotColor: #F2BE76;
+$slotColorHover: #CD9445;
+$bumperColor: #633A00;
+$playerOne: #2E8A67;
+$playerTwo: #413E8F;
+
+.jsConnect4Board {
+    position: relative;
+    width: calc(7 * #{$width} + 8 * #{$margin});
+    
+    
+    .row {
+        .slot {
+            width: $width;
+            height: $height;
+            background: $slotColor;
+            
+            &:hover {
+                background: $slotColorHover;
+            }            
+        }
+        
+        .slot, .bumperHor {
+            display: inline-block;    
+        }
+        
+        .bumperHor {
+            width: $margin;
+            height: $height;
+            background: $bumperColor;
+        }
+    }
+
+    .bumperVer {
+        height: $margin;
+        background: $bumperColor;
+    }       
+
+    .tile {
+        height: $height;
+        width: $width;
+        position: absolute;
+        border-radius: 100%;
+        -webkit-transition: -webkit-transform 1s;
+        transition: transform 1s;
+        
+        &.player1 {
+            background: $playerOne;  
+        }
+        
+        &.player2 {
+            background: $playerTwo;
+        }
+        
+        &.winner {
+            transform: scale(1.2);
+        }
+        
+        &.looser {
+            -webkit-transform: scale(0.8);
+            -moz-transform: scale(0.8);
+            -ms-transform: scale(0.8);
+            -o-transform: scale(0.8);
+            transform: scale(0.8);
+        }        
+    }
+}
+
+.bumperVer, .bumperHor {
+    z-index: 1000;
+}

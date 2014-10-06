@@ -1,0 +1,4 @@
+/bower_components
+.DS_store
+/node_modules
+/css/*.css
