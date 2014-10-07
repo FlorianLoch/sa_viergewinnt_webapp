@@ -8,6 +8,8 @@ function Gameboard(sContainerId) {
         moveCounter = 0,
         SLOT_HEIGHT,
         SLOT_WIDTH,
+        TOTAL_WIDTH,
+        TOTAL_HEIGHT,
         BUMPER_SIZE,
         oClickSound;
     setUp();
@@ -23,6 +25,10 @@ function Gameboard(sContainerId) {
         oBoard.after($("<button>Celebrate</button>").click(function () {
             self.celebrate(1);
         }));
+        oBoard.after($("<button>Clean Up</button>").click(function () {
+            self.resetGame();
+        }));        
+        
         
         oBoard.append("<div class='bumperVer'>"); 
         for (var i = 0; i < 6; i++) {
@@ -50,6 +56,8 @@ function Gameboard(sContainerId) {
         SLOT_HEIGHT = $(".slot").height();
         SLOT_WIDTH = $(".slot").width();
         BUMPER_SIZE = $(".bumperVer").height();
+        TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
+        TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
     }
     
     function buildAddHandler(iColumn) {
@@ -69,7 +77,7 @@ function Gameboard(sContainerId) {
         oBoard.append(oTile);
         oTile.css({
             top: -SLOT_HEIGHT,
-            left: 3 * SLOT_WIDTH + 4 * BUMPER_SIZE,
+            left: (iColumn) * (SLOT_WIDTH + BUMPER_SIZE) + BUMPER_SIZE,
             opacity: 0.2
         });
         oTile.click(buildAddHandler(iColumn));
@@ -114,19 +122,57 @@ function Gameboard(sContainerId) {
     }
     
     this.resetGame = function () {
-        $(".tile").remove();
+        $(".tile").each(function (iIndx) {
+            var self = $(this);
+            var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
+            
+            console.log(coords);
+            
+            self.animate({
+                top: coords.y,
+                left: coords.x,
+                opacity: 0
+            }, {
+                duration: "slow",
+                easing: "swing",
+                done: function () {
+                    self.remove();   
+                }
+            });
+        });
+        
         for (var i = 0; i < 6; i++) {
             arBoard[i] = [];
             for (var j = 0; j < 7; j++) {
                 arBoard[i][j] = {
-                    slot: oSlot,
+                    slot: undefined,
                     set: false
                 };
             }
         }
+        
         moveCounter = 0;
     };
 }
+
+(function () {
+    window.MathUtil = {};
+    MathUtil.getRandomPlaceOnCircle = function (iXm, iYm, iR) {
+        function signum() {
+            return Math.pow(-1, Math.floor(Math.random() * 100));                    
+        }
+
+        var x = signum() * Math.random() * iR;
+        x = Math.round(x);
+        var y = signum() * Math.sqrt(Math.pow(iR, 2) - Math.pow(x, 2));
+        y = Math.round(y);
+        
+        return {
+            x: iXm + x,
+            y: iYm + y
+        };
+    };
+})();
 
 function ColumnFullError(iColumn) {
     this.message = "The given column (" + iColumn + ") is already filled up to the top!";

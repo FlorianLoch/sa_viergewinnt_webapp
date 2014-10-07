@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script>
+            function placeOnCircle() {
+                var c = $("#canvas").get(0);
+                var ctx = c.getContext("2d");
+                
+                ctx.fillStyle = "#111";
+                ctx.strokeStyle = "#FF0000";
+                ctx.moveTo(250, 250);
+            
+                var coords = getRandomPlaceOnCircle(250, 250, 250);
+                ctx.lineTo(coords.x, coords.y);
+                ctx.stroke();
+            }
+            
+            function getRandomPlaceOnCircle(iXm, iYm, iR) {
+                function signum() {
+                    return Math.pow(-1, Math.floor(Math.random() * 100));                    
+                }
+                
+                var x = signum() * Math.random() * iR;
+                var y = signum() * Math.sqrt(Math.pow(iR, 2) - Math.pow(x, 2));
+
+                return {
+                    x: iXm + x,
+                    y: iYm + y
+                };
+            }
+        </script>
+    </head>
+    <body>
+        <canvas id="canvas" width="500" height="500" style="background: blue;"></canvas>
+        <button onclick="placeOnCircle();">New Line</button>
+    </body>
+</html>
