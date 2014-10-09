@@ -11,7 +11,8 @@ function Gameboard(sContainerId) {
         TOTAL_WIDTH,
         TOTAL_HEIGHT,
         BUMPER_SIZE,
-        oClickSound;
+        oClickSound,
+        arAddHandlers = [];
     setUp();
     
     
@@ -61,10 +62,13 @@ function Gameboard(sContainerId) {
     }
     
     function buildAddHandler(iColumn) {
-        return function () {
-            console.log("Going to add tile to column " + iColumn);
-            self.addTile(iColumn);
-        };        
+        if (arAddHandlers[iColumn] === undefined) {
+            arAddHandlers[iColumn] = function () {
+                self.addTile(iColumn);  
+            };
+        }
+            
+        return arAddHandlers[iColumn];    
     }
     
     this.addTile = function (iColumn) {
