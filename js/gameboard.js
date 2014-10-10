@@ -159,37 +159,20 @@ function Gameboard(sContainerId) {
     };
 }
 
-(function () {
-    window.MathUtil = {};
-    MathUtil.getRandomPlaceOnCircle = function (iXm, iYm, iR) {
-        function signum() {
-            return Math.pow(-1, Math.floor(Math.random() * 100));                    
-        }
-
-        var x = signum() * Math.random() * iR;
-        x = Math.round(x);
-        var y = signum() * Math.sqrt(Math.pow(iR, 2) - Math.pow(x, 2));
-        y = Math.round(y);
-        
-        return {
-            x: iXm + x,
-            y: iYm + y
-        };
+function errorFactory(sErrorName, fnMessage) {
+    window[sErrorName] = function () {
+        this.stack = new Error().stack;
+        this.message = fnMessage.apply(fnMessage, arguments);
     };
-})();
-
-function ColumnFullError(iColumn) {
-    this.message = "The given column (" + iColumn + ") is already filled up to the top!";
-    this.stack = new Error().stack;
+    window[sErrorName].prototype = Object.create(Error.prototype); 
+    window[sErrorName].prototype.name = sErrorName;
+    window[sErrorName].prototype.constructor = window[sErrorName];
 }
-ColumnFullError.prototype.name = "ColumnFullError";
-ColumnFullError.prototype = Object.create(Error.prototype);
-ColumnFullError.prototype.constructor = ColumnFullError;
 
-function InvalidColumnError(iColumn) {
-    this.message = "The given column (" + iColumn + ") is invalid!";
-    this.stack = new Error().stack;
-}
-InvalidColumnError.prototype.name = "InvalidColumnError";
-InvalidColumnError.prototype = Object.create(Error.prototype);
-InvalidColumnError.prototype.constructor = InvalidColumnError;
+errorFactory("ColumnFullError", function () {
+    return "The given column (" + arguments[0] + ") is already filled up to the top!";
+});
+
+errorFactory("InvalidColumnError", function () {
+    return "The given column (" + arguments[0] + ") is invalid!";
+});
