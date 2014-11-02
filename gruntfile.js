@@ -17,6 +17,38 @@ module.exports = function(grunt) {
           'css/styles.css': 'css/styles.scss'
         }
       }
+    },
+    uglify: {
+      options: {
+        banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        mangle: true
+      },
+      my_target: {
+        dest: 'dist/jsconnect4.min.js',
+        src: ['js/mathUtils.js', "js/gameboard.js"]
+      }
+    },
+    copy: {
+      my_target: {
+        src: ['css/*', 'sounds/*', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", 'index.html'],
+        dest: 'dist/'
+      },
+      manifest: {
+        src: 'manifest.json',
+        dest: 'dist/manifest.json',
+        options: {
+          process: function(content) {
+            var d = JSON.parse(content);
+            d.background.scripts = ['googleMusicHotkeys.min.js'];
+            return JSON.stringify(d);
+          }
+        }
+      }
+    },
+    removeDir: {
+      my_target: {
+        src: "dist"
+      }
     }
   });
 
@@ -24,6 +56,15 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-sass');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask("s", ["sass:dist", "exec:webserver"]);
+
+  grunt.registerMultiTask("removeDir", "Removes a directory", function() {
+    var rimraf = require('rimraf');
+    rimraf.sync(this.data.src);
+  });
+
+  grunt.registerTask('build', ['removeDir', 'uglify', 'copy']);
 };
