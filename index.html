@@ -1,20 +1,52 @@
 <html>
-    <head>
-        <title>JSConnect4</title>
-        <script src="bower_components/jquery/dist/jquery.js"></script>
-        <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
-        <script src="bower_components/buzz/dist/buzz.min.js"></script>
-        <script src="js/mathUtils.js"></script>
-        <script src="js/gameboard.js"></script>
-        <link rel="stylesheet" type="text/css" href="css/styles.css"></link>
-    
-        <script>
-            $(function () {
-                var board = new Gameboard("#board");
+
+<head>
+  <title>JSConnect4</title>
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
+  <script src="bower_components/buzz/dist/buzz.min.js"></script>
+  <script src="js/mathUtils.js"></script>
+  <script src="js/gameboard.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/styles.css"></link>
+
+  <script>
+    $(function() {
+      $.ajax({
+        url: "http://localhost:8080/JConnect4Server/newGame",
+        success: function(data) {
+          var uuid = data.uuid;
+          console.log("UUID: " + uuid);
+
+          new Gameboard("#board", function(sPlayerTurn, fnCallback) {
+            $.ajax({
+              url: "http://localhost:8080/JConnect4Server/doTurn",
+              success: function(data) {
+                var isRemi = data.is_remi || false;
+                var isPlayerWinner = data.is_won_by_player || false;
+                var isAIWinner = data.is_won_by_ai || false;
+                var aiTurn = data.ai_turn;
+
+                fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn));
+              },
+              data: JSON.stringify({
+                uuid: uuid,
+                player_turn: sPlayerTurn
+              }),
+              type: "POST"
             });
-        </script>
-    </head>
-    <body>
-        <div id="board" class="jsConnect4Board"></div>
-    </body>
+          });
+        },
+        data: JSON.stringify({
+          player_begins: true
+        }),
+        type: "POST"
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <div id="board" class="jsConnect4Board"></div>
+</body>
+
 </html>
