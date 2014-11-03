@@ -161,17 +161,18 @@ function Gameboard(sContainerId, fnTurnHandler) {
     sPlayerTurn = sPlayerTurn + (iRow + 1).toString();
 
     fnTurnHandler(sPlayerTurn, function (oTurnSummary) {
-      self.addTile(oTurnSummary.getColumnOfAITurn(), true);
-
-      if (oTurnSummary.isRemi()) {
-        console.log("REMI");
+      //If the player won the ai doesn't calculate a turn anymore - so we cannot add it and have to check this before
+      if (oTurnSummary.isPlayerWinner()) {
+        console.log("PLAYER WON!");
+        self.celebrate(1);
         gameOver = true;
         return;
       }
 
-      if (oTurnSummary.isPlayerWinner()) {
-        console.log("PLAYER WON!");
-        self.celebrate(1);
+      self.addTile(oTurnSummary.getColumnOfAITurn(), true);
+
+      if (oTurnSummary.isRemi()) {
+        console.log("REMI");
         gameOver = true;
         return;
       }

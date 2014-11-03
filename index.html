@@ -12,6 +12,7 @@
 
   <script>
     const BASE_URL = "http://connect4ii-fdloch.rhcloud.com/";
+    var gameLog = [];
 
     $(function() {
       $.ajax({
@@ -21,6 +22,10 @@
           console.log("UUID: " + uuid);
 
           new Gameboard("#board", function(sPlayerTurn, fnCallback) {
+            var turn = {};
+
+            turn.player = sPlayerTurn;
+
             $.ajax({
               url: BASE_URL + "/doTurn",
               success: function(data) {
@@ -28,6 +33,14 @@
                 var isPlayerWinner = data.is_won_by_player || false;
                 var isAIWinner = data.is_won_by_ai || false;
                 var aiTurn = data.ai_turn;
+
+
+                turn.ai = aiTurn;
+                turn.isRemi = isRemi;
+                turn.isPlayerWinner = isPlayerWinner;
+                turn.isAIWinner = isAIWinner;
+
+                gameLog.push(turn);
 
                 fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn));
               },
@@ -40,16 +53,22 @@
           });
         },
         data: JSON.stringify({
-          player_begins: true
+          player_begins: true,
+          ai: "easyai_norandom" //Play without random for testing purposes
         }),
         type: "POST"
       });
     });
+
+    function showLog() {
+      window.prompt("Please copy via STRG+C / CMD+C", JSON.stringify(gameLog));
+    }
   </script>
 </head>
 
 <body>
   <div id="board" class="jsConnect4Board"></div>
+  <button onClick="showLog();">Show log</button>
 </body>
 
 </html>
