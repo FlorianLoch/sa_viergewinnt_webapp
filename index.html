@@ -32,7 +32,7 @@
                 var isRemi = data.is_remi || false;
                 var isPlayerWinner = data.is_won_by_player || false;
                 var isAIWinner = data.is_won_by_ai || false;
-                var aiTurn = data.ai_turn;
+                var aiTurn = data.ai_turn || "";
 
 
                 turn.ai = aiTurn;
@@ -63,12 +63,22 @@
     function showLog() {
       window.prompt("Please copy via STRG+C / CMD+C", JSON.stringify(gameLog));
     }
+
+    function showMinimizedLog() {
+      var output = "";
+      for (var i = 0; i < gameLog.length; i++) {
+        output += gameLog[i].player + ";" + gameLog[i].ai;
+        if (i + 1 < gameLog.length) output += "$";
+      }
+
+      window.prompt("Please copy via STRG+C / CMD+C", output);
+    }
   </script>
 </head>
 
 <body>
   <div id="board" class="jsConnect4Board"></div>
-  <button onClick="showLog();">Show log</button>
+  <button onClick="showMinimizedLog();">Show log</button>
 </body>
 
 </html>
