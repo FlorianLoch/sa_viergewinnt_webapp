@@ -19,7 +19,7 @@ function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn) {
   };
 }
 
-function Gameboard(sContainerId, fnTurnHandler) {
+function Gameboard(sContainerId, fnNewGameHandler, fnTurnHandler) {
   var self = this,
     arBoard = [],
     oBoard = $(sContainerId),
@@ -34,7 +34,6 @@ function Gameboard(sContainerId, fnTurnHandler) {
     gameOver = false;
   setUp();
 
-
   function setUp() {
     //Initialize sound
     oClickSound = new buzz.sound("sounds/click", {
@@ -42,42 +41,44 @@ function Gameboard(sContainerId, fnTurnHandler) {
       preload: true
     });
 
-    oBoard.after($("<button>Celebrate</button>").click(function() {
-      self.celebrate(1);
-    }));
-    oBoard.after($("<button>Clean Up</button>").click(function() {
-      self.resetGame();
-    }));
+    fnNewGameHandler(function() {
+      oBoard.after($("<button>Celebrate</button>").click(function() {
+        self.celebrate(1);
+      }));
+      oBoard.after($("<button>Clean Up</button>").click(function() {
+        self.resetGame();
+      }));
 
-
-    oBoard.append("<div class='bumperVer'>");
-    for (var i = 0; i < 6; i++) {
-      var oRow = $("<div class='row'>");
-      oBoard.append(oRow);
-      arBoard[i] = [];
-
-      oRow.append("<div class='bumperHor'>");
-      for (var j = 0; j < 7; j++) {
-        var oSlot = $("<div class='slot'>");
-        oSlot.click(buildAddHandler(j));
-        oRow.append(oSlot);
-        oRow.append("<div class='bumperHor'>");
-
-        arBoard[i][j] = {
-          slot: oSlot,
-          set: false
-        };
-      }
 
       oBoard.append("<div class='bumperVer'>");
-    }
+      for (var i = 0; i < 6; i++) {
+        var oRow = $("<div class='row'>");
+        oBoard.append(oRow);
+        arBoard[i] = [];
 
-    //Detect sizes set in CSS
-    SLOT_HEIGHT = $(".slot").height();
-    SLOT_WIDTH = $(".slot").width();
-    BUMPER_SIZE = $(".bumperVer").height();
-    TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
-    TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
+        oRow.append("<div class='bumperHor'>");
+        for (var j = 0; j < 7; j++) {
+          var oSlot = $("<div class='slot'>");
+          oSlot.click(buildAddHandler(j));
+          oRow.append(oSlot);
+          oRow.append("<div class='bumperHor'>");
+
+          arBoard[i][j] = {
+            slot: oSlot,
+            set: false
+          };
+        }
+
+        oBoard.append("<div class='bumperVer'>");
+      }
+
+      //Detect sizes set in CSS
+      SLOT_HEIGHT = $(".slot").height();
+      SLOT_WIDTH = $(".slot").width();
+      BUMPER_SIZE = $(".bumperVer").height();
+      TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
+      TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
+    });
   }
 
   function buildAddHandler(iColumn) {
@@ -160,10 +161,9 @@ function Gameboard(sContainerId, fnTurnHandler) {
     sPlayerTurn = String.fromCharCode(65 + iColumn);
     sPlayerTurn = sPlayerTurn + (iRow + 1).toString();
 
-    fnTurnHandler(sPlayerTurn, function (oTurnSummary) {
+    fnTurnHandler(sPlayerTurn, function(oTurnSummary) {
       //If the player won the ai doesn't calculate a turn anymore - so we cannot add it and have to check this before
       if (oTurnSummary.isPlayerWinner()) {
-        console.log("PLAYER WON!");
         self.celebrate(1);
         gameOver = true;
         return;
@@ -172,13 +172,11 @@ function Gameboard(sContainerId, fnTurnHandler) {
       self.addTile(oTurnSummary.getColumnOfAITurn(), true);
 
       if (oTurnSummary.isRemi()) {
-        console.log("REMI");
         gameOver = true;
         return;
       }
 
       if (oTurnSummary.isAIWinner()) {
-        console.log("AI WON!");
         self.celebrate(2);
         gameOver = true;
         return;
@@ -192,37 +190,37 @@ function Gameboard(sContainerId, fnTurnHandler) {
   }
 
   this.resetGame = function() {
-    $(".tile").each(function(iIndx) {
-      var self = $(this);
-      var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
+    fnNewGameHandler(function() {
+      $(".tile").each(function(iIndx) {
+        var self = $(this);
+        var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
 
-      console.log(coords);
-
-      self.animate({
-        top: coords.y,
-        left: coords.x,
-        opacity: 0
-      }, {
-        duration: "slow",
-        easing: "swing",
-        done: function() {
-          self.remove();
-        }
+        self.animate({
+          top: coords.y,
+          left: coords.x,
+          opacity: 0
+        }, {
+          duration: "slow",
+          easing: "swing",
+          done: function() {
+            self.remove();
+          }
+        });
       });
-    });
 
-    for (var i = 0; i < 6; i++) {
-      arBoard[i] = [];
-      for (var j = 0; j < 7; j++) {
-        arBoard[i][j] = {
-          slot: undefined,
-          set: false
-        };
+      for (var i = 0; i < 6; i++) {
+        arBoard[i] = [];
+        for (var j = 0; j < 7; j++) {
+          arBoard[i][j] = {
+            slot: undefined,
+            set: false
+          };
+        }
       }
-    }
 
-    moveCounter = 0;
-    gameOver = false;
+      moveCounter = 0;
+      gameOver = false;
+    });
   };
 }
 

@@ -15,49 +15,56 @@
     var gameLog = [];
 
     $(function() {
-      $.ajax({
-        url: BASE_URL + "newGame",
-        success: function(data) {
-          var uuid = data.uuid;
-          console.log("UUID: " + uuid);
+      var uuid = "";
 
-          new Gameboard("#board", function(sPlayerTurn, fnCallback) {
-            var turn = {};
+      function newGameHandler(fnCallback) {
+        $.ajax({
+          url: BASE_URL + "newGame",
+          success: function(data) {
+            uuid = data.uuid;
+            console.log("UUID: " + uuid);
 
-            turn.player = sPlayerTurn;
+            fnCallback();
+          },
+          data: JSON.stringify({
+            player_begins: true,
+            ai: "easyai_norandom" //Play without random for testing purposes
+          }),
+          type: "POST"
+        });
+      }
 
-            $.ajax({
-              url: BASE_URL + "/doTurn",
-              success: function(data) {
-                var isRemi = data.is_remi || false;
-                var isPlayerWinner = data.is_won_by_player || false;
-                var isAIWinner = data.is_won_by_ai || false;
-                var aiTurn = data.ai_turn || "";
+      function turnHandler(sPlayerTurn, fnCallback) {
+        var turn = {};
 
+        turn.player = sPlayerTurn;
 
-                turn.ai = aiTurn;
-                turn.isRemi = isRemi;
-                turn.isPlayerWinner = isPlayerWinner;
-                turn.isAIWinner = isAIWinner;
+        $.ajax({
+          url: BASE_URL + "/doTurn",
+          success: function(data) {
+            var isRemi = data.is_remi || false;
+            var isPlayerWinner = data.is_won_by_player || false;
+            var isAIWinner = data.is_won_by_ai || false;
+            var aiTurn = data.ai_turn || "";
 
-                gameLog.push(turn);
+            turn.ai = aiTurn;
+            turn.isRemi = isRemi;
+            turn.isPlayerWinner = isPlayerWinner;
+            turn.isAIWinner = isAIWinner;
 
-                fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn));
-              },
-              data: JSON.stringify({
-                uuid: uuid,
-                player_turn: sPlayerTurn
-              }),
-              type: "POST"
-            });
-          });
-        },
-        data: JSON.stringify({
-          player_begins: true,
-          ai: "easyai_norandom" //Play without random for testing purposes
-        }),
-        type: "POST"
-      });
+            gameLog.push(turn);
+
+            fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn));
+          },
+          data: JSON.stringify({
+            uuid: uuid,
+            player_turn: sPlayerTurn
+          }),
+          type: "POST"
+        });
+      }
+
+      new Gameboard("#board", newGameHandler, turnHandler);
     });
 
     function showLog() {
