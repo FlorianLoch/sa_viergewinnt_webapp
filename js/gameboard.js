@@ -40,6 +40,9 @@ function Gameboard(sContainerId, fnNewGameHandler, fnTurnHandler) {
   TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
 
   function setUp() {
+    //Add "loading" add
+    oBoard.addClass("loading");
+
     //Initialize sound
     oClickSound = new buzz.sound("sounds/click", {
       formats: ["ogg", "mp3"],
@@ -47,6 +50,10 @@ function Gameboard(sContainerId, fnNewGameHandler, fnTurnHandler) {
     });
 
     fnNewGameHandler(function() {
+      //Remove child nodes and loading class (during loading they might be used for displaying information)
+      oBoard.removeClass("loading");
+      oBoard.empty();
+
       oBoard.after($("<button>Celebrate</button>").click(function() {
         self.celebrate(1);
       }));
