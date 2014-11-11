@@ -28,11 +28,16 @@ function Gameboard(sContainerId, fnNewGameHandler, fnTurnHandler) {
     SLOT_WIDTH,
     TOTAL_WIDTH,
     TOTAL_HEIGHT,
-    BUMPER_SIZE,
+    BUMPER_SIZE = 5,
     oClickSound,
     arAddHandlers = [],
     gameOver = false;
   setUp();
+
+  SLOT_HEIGHT = 100;
+  SLOT_WIDTH = 100;
+  TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
+  TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
 
   function setUp() {
     //Initialize sound
@@ -49,35 +54,25 @@ function Gameboard(sContainerId, fnNewGameHandler, fnTurnHandler) {
         self.resetGame();
       }));
 
-
-      oBoard.append("<div class='bumperVer'>");
       for (var i = 0; i < 6; i++) {
-        var oRow = $("<div class='row'>");
-        oBoard.append(oRow);
         arBoard[i] = [];
 
-        oRow.append("<div class='bumperHor'>");
         for (var j = 0; j < 7; j++) {
-          var oSlot = $("<div class='slot'>");
+          var oSlot = $("<div class='slot'>").css({
+            top:  i * (BUMPER_SIZE + SLOT_HEIGHT) + BUMPER_SIZE,
+            left: j * (BUMPER_SIZE + SLOT_WIDTH) + BUMPER_SIZE,
+            height: SLOT_HEIGHT,
+            width: SLOT_WIDTH
+          });
           oSlot.click(buildAddHandler(j));
-          oRow.append(oSlot);
-          oRow.append("<div class='bumperHor'>");
+          oBoard.append(oSlot);
 
           arBoard[i][j] = {
             slot: oSlot,
             set: false
           };
         }
-
-        oBoard.append("<div class='bumperVer'>");
       }
-
-      //Detect sizes set in CSS
-      SLOT_HEIGHT = $(".slot").height();
-      SLOT_WIDTH = $(".slot").width();
-      BUMPER_SIZE = $(".bumperVer").height();
-      TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
-      TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
     });
   }
 

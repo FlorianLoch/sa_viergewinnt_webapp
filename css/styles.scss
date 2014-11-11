@@ -10,34 +10,18 @@ $playerTwo: #413E8F;
 .jsConnect4Board {
     position: relative;
     width: calc(7 * #{$width} + 8 * #{$margin});
-    
-    
-    .row {
-        .slot {
-            width: $width;
-            height: $height;
-            background: $slotColor;
-            
-            &:hover {
-                background: $slotColorHover;
-            }            
-        }
-        
-        .slot, .bumperHor {
-            display: inline-block;    
-        }
-        
-        .bumperHor {
-            width: $margin;
-            height: $height;
-            background: $bumperColor;
+    height: calc(6 * #{$height} + 7 * #{$margin});
+
+    background: #9e661d;
+
+    .slot {
+        position: absolute;
+        background: $slotColor;
+
+        &:hover {
+            background: $slotColorHover;
         }
     }
-
-    .bumperVer {
-        height: $margin;
-        background: $bumperColor;
-    }       
 
     .tile {
         height: $height;
@@ -46,26 +30,26 @@ $playerTwo: #413E8F;
         border-radius: 100%;
         -webkit-transition: -webkit-transform 1s;
         transition: transform 1s;
-        
+
         &.player1 {
-            background: $playerOne;  
+            background: $playerOne;
         }
-        
+
         &.player2 {
             background: $playerTwo;
         }
-        
+
         &.winner {
             transform: scale(1.2);
         }
-        
+
         &.looser {
             -webkit-transform: scale(0.8);
             -moz-transform: scale(0.8);
             -ms-transform: scale(0.8);
             -o-transform: scale(0.8);
             transform: scale(0.8);
-        }        
+        }
     }
 }
 
