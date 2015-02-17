@@ -32,17 +32,6 @@ module.exports = function(grunt) {
       my_target: {
         src: ['css/*', 'sounds/*', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", 'index.html'],
         dest: 'dist/'
-      },
-      manifest: {
-        src: 'manifest.json',
-        dest: 'dist/manifest.json',
-        options: {
-          process: function(content) {
-            var d = JSON.parse(content);
-            d.background.scripts = ['googleMusicHotkeys.min.js'];
-            return JSON.stringify(d);
-          }
-        }
       }
     },
     removeDir: {
