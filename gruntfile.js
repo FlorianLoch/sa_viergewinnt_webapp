@@ -55,5 +55,5 @@ module.exports = function(grunt) {
     rimraf.sync(this.data.src);
   });
 
-  grunt.registerTask('build', ['removeDir', 'uglify', 'copy']);
+  grunt.registerTask('build', ['removeDir', 'sass', 'uglify', 'copy']);
 };
