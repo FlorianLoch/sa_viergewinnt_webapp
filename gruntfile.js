@@ -30,7 +30,7 @@ module.exports = function(grunt) {
     },
     copy: {
       my_target: {
-        src: ['css/*', 'sounds/*', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", 'index.html'],
+        src: ['css/styles.css', 'sounds/*', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", 'index.html'],
         dest: 'dist/'
       }
     },
