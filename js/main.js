@@ -1,8 +1,8 @@
 var BASE_URL = "";
 var gameLog = [];
+var uuid = "";
 
 $(function () {
-    var uuid = "";
     var blockInput = false;
 
     //Register global callback for blocking input during requests
@@ -79,7 +79,7 @@ function showLog() {
 }
 
 function showMinimizedLog() {
-    var output = "";
+    var output = uuid;
     for (var i = 0; i < gameLog.length; i++) {
         output += gameLog[i].player + ";" + gameLog[i].ai;
         if (i + 1 < gameLog.length) output += "$";
