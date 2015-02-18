@@ -1,18 +1,19 @@
 $width: 100px;
 $height: 100px;
 $margin: 5px;
-$slotColor: #F2BE76;
-$slotColorHover: #CD9445;
-$bumperColor: #633A00;
-$playerOne: #2E8A67;
-$playerTwo: #413E8F;
+$slotColor: #5287f2;
+$slotColorHover: #adb1cd;
+$bumperColor: #0c2160;
+$playerOne: #ffd80d;
+$playerTwo: #ff1647;
 
 .jsConnect4Board {
     position: relative;
     width: calc(7 * #{$width} + 8 * #{$margin});
     height: calc(6 * #{$height} + 7 * #{$margin});
+    cursor: pointer;
 
-    background: #9e661d;
+    background: $bumperColor;
 
     .slot {
         position: absolute;

@@ -4,3 +4,4 @@
 /css/*.css
 /dist/
 npm-*.log
+.idea/

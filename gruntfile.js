@@ -24,8 +24,8 @@ module.exports = function(grunt) {
         mangle: true
       },
       my_target: {
-        dest: 'dist/jsconnect4.min.js',
-        src: ['js/mathUtils.js', "js/gameboard.js"]
+        dest: "dist/jsconnect4.min.js",
+        src: ["js/main.js", "js/mathUtils.js", "js/gameboard.js"]
       }
     },
     copy: {
