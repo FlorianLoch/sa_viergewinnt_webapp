@@ -205,6 +205,9 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         });
 
         $(".tile").not(".winner").addClass("looser");
+        $(".tile").not(".winner").animate({
+            "opacity": 0.3
+        }, "slow", "linear");
     }
 
     this.resetGame = function () {
