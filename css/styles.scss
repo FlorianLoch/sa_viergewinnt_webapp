@@ -6,11 +6,21 @@ $slotColorHover: #adb1cd;
 $bumperColor: #0c2160;
 $playerOne: #ffd80d;
 $playerTwo: #ff1647;
+$boardWidth: calc(7 * #{$width} + 8 * #{$margin});
+$boardHeight: calc(6 * #{$height} + 7 * #{$margin});
+
+#boardContainer {
+  margin: auto;
+  margin-top: 20px;
+  width: $boardWidth;
+  height: $boardHeight;
+}
 
 .jsConnect4Board {
     position: relative;
-    width: calc(7 * #{$width} + 8 * #{$margin});
-    height: calc(6 * #{$height} + 7 * #{$margin});
+    width: $boardWidth;
+    height: $boardHeight;
+
     cursor: pointer;
 
     background: $bumperColor;
@@ -29,8 +39,8 @@ $playerTwo: #ff1647;
         width: $width;
         position: absolute;
         border-radius: 100%;
-        -webkit-transition: -webkit-transform 1s;
-        transition: transform 1s;
+        -webkit-transition: all 1s;
+        transition: all 1s;
 
         &.player1 {
             background: $playerOne;
@@ -41,6 +51,10 @@ $playerTwo: #ff1647;
         }
 
         &.winner {
+            -webkit-transform: scale(1.2);
+            -moz-transform: scale(1.2);
+            -ms-transform: scale(1.2);
+            -o-transform: scale(1.2);
             transform: scale(1.2);
         }
 
@@ -50,6 +64,7 @@ $playerTwo: #ff1647;
             -ms-transform: scale(0.8);
             -o-transform: scale(0.8);
             transform: scale(0.8);
+            opacity: 0.3;
         }
     }
 }

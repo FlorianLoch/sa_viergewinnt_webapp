@@ -1,7 +1,7 @@
 // gameboard.js
 "use strict";
 
-function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn) {
+function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn, arWinningStreak) {
     this.isAIWinner = function () {
         return bAIWon;
     };
@@ -16,6 +16,10 @@ function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn) {
 
     this.getColumnOfAITurn = function () {
         return sAITurn.toUpperCase().charCodeAt(0) - 65;
+    };
+
+    this.getWinningStreak = function () {
+        return arWinningStreak;
     };
 }
 
@@ -122,10 +126,9 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         var iRow = determineRowInColumn(iColumn);
         var pos = computePosition(iColumn, iRow);
 
-        //Send turn to server (only if it is a player turn)
-        if (!bAITurn) doAITurn(iColumn, iRow);
+        var fieldName = indexToFieldName(iColumn, iRow);
 
-        var oTile = $("<div class='tile player" + (moveCounter % 2 + 1) + "'>");
+        var oTile = $("<div id='" + fieldName + "' class='tile player" + (moveCounter % 2 + 1) + "'>");
         oBoard.append(oTile);
         oTile.css({
             top: -SLOT_HEIGHT,
@@ -151,6 +154,9 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             player: (moveCounter % 2 + 1)
         };
 
+        //Send turn to server (only if it is a player turn)
+        if (!bAITurn) doAITurn(iColumn, iRow);
+
         //If this was move number 42, the game is over
         moveCounter++;
         if (moveCounter === 42) {
@@ -158,16 +164,22 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         }
     }
 
+    function indexToFieldName(iColumn, iRow ){
+        var fieldName = String.fromCharCode(65 + iColumn);
+        fieldName = fieldName + (iRow + 1).toString();
+
+        return fieldName;
+    }
+
     function doAITurn(iColumn, iRow) {
         var sPlayerTurn;
 
-        sPlayerTurn = String.fromCharCode(65 + iColumn);
-        sPlayerTurn = sPlayerTurn + (iRow + 1).toString();
+        sPlayerTurn = indexToFieldName(iColumn, iRow);
 
         fnTurnHandler(sPlayerTurn, function (oTurnSummary) {
             //If the player won the ai doesn't calculate a turn anymore - so we cannot add it and have to check this before
             if (oTurnSummary.isPlayerWinner()) {
-                self.celebrate(1);
+                self.celebrate(1, oTurnSummary.getWinningStreak());
                 gameOver = true;
                 return;
             }
@@ -180,15 +192,18 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             }
 
             if (oTurnSummary.isAIWinner()) {
-                self.celebrate(2);
+                self.celebrate(2, oTurnSummary.getWinningStreak());
                 gameOver = true;
                 return;
             }
         });
     }
 
-    this.celebrate = function (iPlayer) {
-        $(".player" + iPlayer).addClass("winner");
+    this.celebrate = function (iPlayer, arWinningStreak) {
+        arWinningStreak.forEach(function (sFieldName) {
+           $("#" + sFieldName).addClass("winner");
+        });
+
         $(".tile").not(".winner").addClass("looser");
     }
 

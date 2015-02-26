@@ -49,6 +49,7 @@ $(function () {
                 var isPlayerWinner = data.is_won_by_player || false;
                 var isAIWinner = data.is_won_by_ai || false;
                 var aiTurn = data.ai_turn || "";
+                var arWinningStreak = data.winning_streak;
 
                 turn.ai = aiTurn;
                 turn.isRemi = isRemi;
@@ -57,7 +58,7 @@ $(function () {
 
                 gameLog.push(turn);
 
-                fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn));
+                fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn, arWinningStreak));
             },
             data: JSON.stringify({
                 uuid: uuid,
