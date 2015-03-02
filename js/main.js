@@ -1,5 +1,5 @@
 var BASE_URL = "";
-var gameLog = [];
+var gameLog;
 var uuid = "";
 
 $(function () {
@@ -24,6 +24,8 @@ $(function () {
         $.ajax({
             url: BASE_URL + "/newGame",
             success: function (data) {
+                gameLog = [];
+
                 uuid = data.uuid;
                 console.log("UUID: " + uuid);
 
