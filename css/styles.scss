@@ -11,13 +11,20 @@ $boardHeight: calc(6 * #{$height} + 7 * #{$margin});
 
 body {
   background: #778899;
+  font-family: "Helvetica Neue Light", "Lucida Grande", "Calibri", "Arial", sans-serif;
 }
 
 #boardContainer {
-  margin: auto;
-  margin-top: 20px;
+  margin: 20px auto;
   width: $boardWidth;
   height: $boardHeight;
+}
+
+#footer {
+  text-align: center;
+  padding: 30px;
+  background: #363636;
+  color: #d3d3d3;
 }
 
 .bootstrap-dialog-footer-buttons {

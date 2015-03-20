@@ -38,12 +38,12 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         gameOver = false,
         playerBegins;
 
-    setUp();
-
     SLOT_HEIGHT = 100;
     SLOT_WIDTH = 100;
     TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
     TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
+
+    setUp();
 
     function showDoesPlayerStartsDialog(fnCallback) {
         var dialog = new BootstrapDialog({
@@ -84,40 +84,41 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     function setUp() {
+        //Add "loading" add
+        oBoard.addClass("loading");
+
+        //Initialize sound
+        oClickSound = new buzz.sound("sounds/click", {
+            formats: ["ogg", "mp3"],
+            preload: true
+        });
+
+        oBoard.empty();
+
+        for (var i = 0; i < 6; i++) {
+            arBoard[i] = [];
+
+            for (var j = 0; j < 7; j++) {
+                var oSlot = $("<div class='slot'>").css({
+                    top: i * (BUMPER_SIZE + SLOT_HEIGHT) + BUMPER_SIZE,
+                    left: j * (BUMPER_SIZE + SLOT_WIDTH) + BUMPER_SIZE,
+                    height: SLOT_HEIGHT,
+                    width: SLOT_WIDTH
+                });
+                oSlot.click(buildAddHandler(j));
+                oBoard.append(oSlot);
+
+                arBoard[i][j] = {
+                    slot: oSlot,
+                    set: false
+                };
+            }
+        }
+
         showDoesPlayerStartsDialog(function () {
-            //Add "loading" add
-            oBoard.addClass("loading");
-
-            //Initialize sound
-            oClickSound = new buzz.sound("sounds/click", {
-                formats: ["ogg", "mp3"],
-                preload: true
-            });
-
             fnNewGameHandler(function (aiTurnColumn_i) {
                 //Remove child nodes and loading class (during loading they might be used for displaying information)
                 oBoard.removeClass("loading");
-                oBoard.empty();
-
-                for (var i = 0; i < 6; i++) {
-                    arBoard[i] = [];
-
-                    for (var j = 0; j < 7; j++) {
-                        var oSlot = $("<div class='slot'>").css({
-                            top: i * (BUMPER_SIZE + SLOT_HEIGHT) + BUMPER_SIZE,
-                            left: j * (BUMPER_SIZE + SLOT_WIDTH) + BUMPER_SIZE,
-                            height: SLOT_HEIGHT,
-                            width: SLOT_WIDTH
-                        });
-                        oSlot.click(buildAddHandler(j));
-                        oBoard.append(oSlot);
-
-                        arBoard[i][j] = {
-                            slot: oSlot,
-                            set: false
-                        };
-                    }
-                }
 
                 if (aiTurnColumn_i != undefined) {
                     self.addTile(aiTurnColumn_i, true);
