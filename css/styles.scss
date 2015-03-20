@@ -1,13 +1,17 @@
 $width: 100px;
 $height: 100px;
 $margin: 5px;
-$slotColor: #5287f2;
+$slotColor: lightgrey;
 $slotColorHover: #adb1cd;
 $bumperColor: #0c2160;
-$playerOne: #ffd80d;
-$playerTwo: #ff1647;
+$playerOne: #ffb508;
+$playerTwo: #ff0f22;
 $boardWidth: calc(7 * #{$width} + 8 * #{$margin});
 $boardHeight: calc(6 * #{$height} + 7 * #{$margin});
+
+body {
+  background: #778899;
+}
 
 #boardContainer {
   margin: auto;
