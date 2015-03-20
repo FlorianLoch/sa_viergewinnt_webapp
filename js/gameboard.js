@@ -23,7 +23,7 @@ function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn, arWinningStreak) {
     };
 }
 
-function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTurnHandler, fnDoesPlayerStartCallback) {
+function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTurnHandler) {
     var self = this,
         arBoard = [],
         oBoard = $(sContainerId),
@@ -35,8 +35,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         BUMPER_SIZE = 5,
         oClickSound,
         arAddHandlers = [],
-        gameOver = false,
-        playerBegins = false;
+        gameOver = false;
+
     setUp();
 
     SLOT_HEIGHT = 100;
@@ -44,54 +44,87 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     TOTAL_HEIGHT = SLOT_HEIGHT * 6 + BUMPER_SIZE * 7;
     TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
 
-    function setUp() {
-        playerBegins = fnDoesPlayerStartCallback();
-
-        //Add "loading" add
-        oBoard.addClass("loading");
-
-        //Initialize sound
-        oClickSound = new buzz.sound("sounds/click", {
-            formats: ["ogg", "mp3"],
-            preload: true
+    function showDoesPlayerStartsDialog(fnCallback) {
+        BootstrapDialog.show({
+            title: 'Who shall begin?',
+            message: 'Please decide who should play the first turn!',
+            buttons: [{
+                label: 'Let me begin',
+                action: function(dialog) {
+                    closeDialogAndContinue(dialog, true);
+                }
+            }, {
+                label: 'Let the computer begin',
+                action: function(dialog) {
+                    closeDialogAndContinue(dialog, false);
+                }
+            }, {
+                label: 'I don\'t care',
+                action: function(dialog) {
+                    closeDialogAndContinue(dialog, "random");
+                }
+            }]
         });
 
-        fnNewGameHandler(function (aiTurnColumn_i) {
-            //Remove child nodes and loading class (during loading they might be used for displaying information)
-            oBoard.removeClass("loading");
-            oBoard.empty();
+        function closeDialogAndContinue(oDialog, playerStarts) {
+            oDialog.close();
 
-            oBoard.after($("<button>Celebrate</button>").click(function () {
-                self.celebrate(1);
-            }));
-            oBoard.after($("<button>Clean Up</button>").click(function () {
-                self.resetGame();
-            }));
+            if ("random" == playerStarts) {
+                playerStarts = (Math.random() < 0.5);
+            }
 
-            for (var i = 0; i < 6; i++) {
-                arBoard[i] = [];
+            fnCallback(playerStarts);
+        }
+    }
 
-                for (var j = 0; j < 7; j++) {
-                    var oSlot = $("<div class='slot'>").css({
-                        top: i * (BUMPER_SIZE + SLOT_HEIGHT) + BUMPER_SIZE,
-                        left: j * (BUMPER_SIZE + SLOT_WIDTH) + BUMPER_SIZE,
-                        height: SLOT_HEIGHT,
-                        width: SLOT_WIDTH
-                    });
-                    oSlot.click(buildAddHandler(j));
-                    oBoard.append(oSlot);
+    function setUp() {
+        showDoesPlayerStartsDialog(function (playerBegins) {
+            //Add "loading" add
+            oBoard.addClass("loading");
 
-                    arBoard[i][j] = {
-                        slot: oSlot,
-                        set: false
-                    };
+            //Initialize sound
+            oClickSound = new buzz.sound("sounds/click", {
+                formats: ["ogg", "mp3"],
+                preload: true
+            });
+
+            fnNewGameHandler(function (aiTurnColumn_i) {
+                //Remove child nodes and loading class (during loading they might be used for displaying information)
+                oBoard.removeClass("loading");
+                oBoard.empty();
+
+                oBoard.after($("<button>Celebrate</button>").click(function () {
+                    self.celebrate(1);
+                }));
+                oBoard.after($("<button>Clean Up</button>").click(function () {
+                    self.resetGame();
+                }));
+
+                for (var i = 0; i < 6; i++) {
+                    arBoard[i] = [];
+
+                    for (var j = 0; j < 7; j++) {
+                        var oSlot = $("<div class='slot'>").css({
+                            top: i * (BUMPER_SIZE + SLOT_HEIGHT) + BUMPER_SIZE,
+                            left: j * (BUMPER_SIZE + SLOT_WIDTH) + BUMPER_SIZE,
+                            height: SLOT_HEIGHT,
+                            width: SLOT_WIDTH
+                        });
+                        oSlot.click(buildAddHandler(j));
+                        oBoard.append(oSlot);
+
+                        arBoard[i][j] = {
+                            slot: oSlot,
+                            set: false
+                        };
+                    }
                 }
-            }
 
-            if (aiTurnColumn_i != undefined) {
-                self.addTile(aiTurnColumn_i, true);
-            }
-        }, playerBegins);
+                if (aiTurnColumn_i != undefined) {
+                    self.addTile(aiTurnColumn_i, true);
+                }
+            }, playerBegins);
+        });
     }
 
     function buildAddHandler(iColumn) {
@@ -218,41 +251,43 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     this.resetGame = function () {
-        fnNewGameHandler(function (aiTurnColumn_i) {
-            $(".tile").each(function (iIndx) {
-                var self = $(this);
-                var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
+        showDoesPlayerStartsDialog(function (playerBegins) {
+            fnNewGameHandler(function (aiTurnColumn_i) {
+                $(".tile").each(function (iIndx) {
+                    var self = $(this);
+                    var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
 
-                self.animate({
-                    top: coords.y,
-                    left: coords.x,
-                    opacity: 0
-                }, {
-                    duration: "slow",
-                    easing: "swing",
-                    done: function () {
-                        self.remove();
-                    }
+                    self.animate({
+                        top: coords.y,
+                        left: coords.x,
+                        opacity: 0
+                    }, {
+                        duration: "slow",
+                        easing: "swing",
+                        done: function () {
+                            self.remove();
+                        }
+                    });
                 });
-            });
 
-            for (var i = 0; i < 6; i++) {
-                arBoard[i] = [];
-                for (var j = 0; j < 7; j++) {
-                    arBoard[i][j] = {
-                        slot: undefined,
-                        set: false
-                    };
+                for (var i = 0; i < 6; i++) {
+                    arBoard[i] = [];
+                    for (var j = 0; j < 7; j++) {
+                        arBoard[i][j] = {
+                            slot: undefined,
+                            set: false
+                        };
+                    }
                 }
-            }
 
-            moveCounter = 0;
-            gameOver = false;
+                moveCounter = 0;
+                gameOver = false;
 
-            if (aiTurnColumn_i != undefined) {
-                self.addTile(aiTurnColumn_i, true);
-            }
-        }, fnDoesPlayerStartCallback());
+                if (aiTurnColumn_i != undefined) {
+                    self.addTile(aiTurnColumn_i, true);
+                }
+            }, playerBegins);
+        });
     };
 }
 

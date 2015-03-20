@@ -4,7 +4,6 @@ var uuid = "";
 
 $(function () {
     var blockInput = false;
-    var playerBegins = false;
 
     //Register global callback for blocking input during requests
     $(document).ajaxStart(function () {
@@ -90,11 +89,8 @@ $(function () {
         return blockInput;
     }
 
-    function doesPlayerBeginCallback() {
-        return playerBegins;
-    }
 
-    new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler, doesPlayerBeginCallback);
+    new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler);
 });
 
 function showMinimizedLog() {
