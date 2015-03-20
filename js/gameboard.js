@@ -23,7 +23,7 @@ function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn, arWinningStreak) {
     };
 }
 
-function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTurnHandler) {
+function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTurnHandler, fnDoesPlayerStartCallback) {
     var self = this,
         arBoard = [],
         oBoard = $(sContainerId),
@@ -35,7 +35,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         BUMPER_SIZE = 5,
         oClickSound,
         arAddHandlers = [],
-        gameOver = false;
+        gameOver = false,
+        playerBegins = false;
     setUp();
 
     SLOT_HEIGHT = 100;
@@ -44,6 +45,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
 
     function setUp() {
+        playerBegins = fnDoesPlayerStartCallback();
+
         //Add "loading" add
         oBoard.addClass("loading");
 
@@ -53,7 +56,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             preload: true
         });
 
-        fnNewGameHandler(function () {
+        fnNewGameHandler(function (aiTurnColumn_i) {
             //Remove child nodes and loading class (during loading they might be used for displaying information)
             oBoard.removeClass("loading");
             oBoard.empty();
@@ -84,7 +87,11 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
                     };
                 }
             }
-        });
+
+            if (aiTurnColumn_i != undefined) {
+                self.addTile(aiTurnColumn_i, true);
+            }
+        }, playerBegins);
     }
 
     function buildAddHandler(iColumn) {
@@ -179,7 +186,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         fnTurnHandler(sPlayerTurn, function (oTurnSummary) {
             //If the player won the ai doesn't calculate a turn anymore - so we cannot add it and have to check this before
             if (oTurnSummary.isPlayerWinner()) {
-                self.celebrate(1, oTurnSummary.getWinningStreak());
+                self.celebrate((playerBegins) ? 1 : 2, oTurnSummary.getWinningStreak());
                 gameOver = true;
                 return;
             }
@@ -192,7 +199,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             }
 
             if (oTurnSummary.isAIWinner()) {
-                self.celebrate(2, oTurnSummary.getWinningStreak());
+                self.celebrate((playerBegins) ? 2 : 1, oTurnSummary.getWinningStreak());
                 gameOver = true;
                 return;
             }
@@ -211,7 +218,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     this.resetGame = function () {
-        fnNewGameHandler(function () {
+        fnNewGameHandler(function (aiTurnColumn_i) {
             $(".tile").each(function (iIndx) {
                 var self = $(this);
                 var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
@@ -241,7 +248,11 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
 
             moveCounter = 0;
             gameOver = false;
-        });
+
+            if (aiTurnColumn_i != undefined) {
+                self.addTile(aiTurnColumn_i, true);
+            }
+        }, fnDoesPlayerStartCallback());
     };
 }
 

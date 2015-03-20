@@ -1,9 +1,10 @@
-var BASE_URL = "";
+var BASE_URL = "/api";
 var gameLog;
 var uuid = "";
 
 $(function () {
     var blockInput = false;
+    var playerBegins = false;
 
     //Register global callback for blocking input during requests
     $(document).ajaxStart(function () {
@@ -20,22 +21,37 @@ $(function () {
         blockInput = false;
     });
 
-    function newGameHandler(fnCallback) {
+    function newGameHandler(fnCallback, playerBegins) {
         $.ajax({
-            url: BASE_URL + "/newGame",
+            url: BASE_URL + "/game",
             success: function (data) {
                 gameLog = [];
 
                 uuid = data.uuid;
                 console.log("UUID: " + uuid);
 
+                if (!playerBegins) {
+                    var turn = {};
+                    turn.player = null;
+                    turn.ai = data.ai_turn;
+                    turn.isRemi = false;
+                    turn.isPlayerWinner = false;
+                    turn.isAIWinner = false;
+
+                    gameLog.push(data.ai_turn);
+
+                    fnCallback(data.ai_turn.toUpperCase().charCodeAt(0) - 65);
+                    return;
+                }
+
                 fnCallback();
             },
             data: JSON.stringify({
-                player_begins: true,
-                ai: "alphaBetaAI" //other possibilities would be: easyAI_noRandom, easyAI
+                player_begins: playerBegins,
+                ai_algorithm: "alphaBetaAI" //other possibilities would be: easyAI_noRandom, easyAI
             }),
-            type: "POST"
+            contentType: "application/json",
+            type: "PUT"
         });
     }
 
@@ -45,11 +61,11 @@ $(function () {
         turn.player = sPlayerTurn;
 
         $.ajax({
-            url: BASE_URL + "/doTurn",
+            url: BASE_URL + "/game/" + uuid,
             success: function (data) {
-                var isRemi = data.is_remi || false;
-                var isPlayerWinner = data.is_won_by_player || false;
-                var isAIWinner = data.is_won_by_ai || false;
+                var isRemi = data.remis || false;
+                var isPlayerWinner = data.player_won || false;
+                var isAIWinner = data.ai_won || false;
                 var aiTurn = data.ai_turn || "";
                 var arWinningStreak = data.winning_streak;
 
@@ -63,9 +79,9 @@ $(function () {
                 fnCallback(new TurnSummary(isAIWinner, isPlayerWinner, isRemi, aiTurn, arWinningStreak));
             },
             data: JSON.stringify({
-                uuid: uuid,
                 player_turn: sPlayerTurn
             }),
+            contentType: "application/json",
             type: "POST"
         });
     }
@@ -74,12 +90,12 @@ $(function () {
         return blockInput;
     }
 
-    new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler);
-});
+    function doesPlayerBeginCallback() {
+        return playerBegins;
+    }
 
-function showLog() {
-    window.prompt("Please copy via STRG+C / CMD+C", JSON.stringify(gameLog));
-}
+    new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler, doesPlayerBeginCallback);
+});
 
 function showMinimizedLog() {
     var output = uuid;
