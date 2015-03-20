@@ -16,6 +16,10 @@ $boardHeight: calc(6 * #{$height} + 7 * #{$margin});
   height: $boardHeight;
 }
 
+.bootstrap-dialog-footer-buttons {
+  text-align: center;
+}
+
 .jsConnect4Board {
     position: relative;
     width: $boardWidth;

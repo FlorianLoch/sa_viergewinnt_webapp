@@ -90,7 +90,24 @@ $(function () {
     }
 
 
-    new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler);
+    var gameboard = new Gameboard("#board", isInputBlockedHandler, newGameHandler, turnHandler);
+
+    $(document).on("keyup", function (event) {
+        event.preventDefault();
+
+        if ("L".charCodeAt(0) == event.which) {
+            showMinimizedLog();
+        }
+
+        else if ("R".charCodeAt(0) == event.which) {
+            gameboard.resetGame();
+        }
+
+        var column = event.which - 65;
+        if (column >= 0 && column <= 6) {
+            gameboard.addTile(column, false);
+        }
+    });
 });
 
 function showMinimizedLog() {

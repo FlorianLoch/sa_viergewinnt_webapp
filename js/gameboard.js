@@ -35,7 +35,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         BUMPER_SIZE = 5,
         oClickSound,
         arAddHandlers = [],
-        gameOver = false;
+        gameOver = false,
+        playerBegins;
 
     setUp();
 
@@ -45,40 +46,45 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     TOTAL_WIDTH = SLOT_WIDTH * 7 + BUMPER_SIZE * 8;
 
     function showDoesPlayerStartsDialog(fnCallback) {
-        BootstrapDialog.show({
+        var dialog = new BootstrapDialog({
             title: 'Who shall begin?',
             message: 'Please decide who should play the first turn!',
             buttons: [{
-                label: 'Let me begin',
+                label: 'Let me begin (1)',
                 action: function(dialog) {
-                    closeDialogAndContinue(dialog, true);
-                }
+                    closeDialogAndContinue(true);
+                },
+                hotkey: "1".charCodeAt(0)
             }, {
-                label: 'Let the computer begin',
+                label: 'I don\'t care (2)',
                 action: function(dialog) {
-                    closeDialogAndContinue(dialog, false);
-                }
+                    closeDialogAndContinue("random");
+                },
+                hotkey: "2".charCodeAt(0)
             }, {
-                label: 'I don\'t care',
+                label: 'Let the computer begin (3)',
                 action: function(dialog) {
-                    closeDialogAndContinue(dialog, "random");
-                }
+                    closeDialogAndContinue(false);
+                },
+                hotkey: "3".charCodeAt(0)
             }]
         });
+        dialog.open();
 
-        function closeDialogAndContinue(oDialog, playerStarts) {
-            oDialog.close();
+        function closeDialogAndContinue(playerStarts) {
+            dialog.close();
 
             if ("random" == playerStarts) {
                 playerStarts = (Math.random() < 0.5);
             }
 
+            playerBegins = playerStarts;
             fnCallback(playerStarts);
         }
     }
 
     function setUp() {
-        showDoesPlayerStartsDialog(function (playerBegins) {
+        showDoesPlayerStartsDialog(function () {
             //Add "loading" add
             oBoard.addClass("loading");
 
@@ -92,13 +98,6 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
                 //Remove child nodes and loading class (during loading they might be used for displaying information)
                 oBoard.removeClass("loading");
                 oBoard.empty();
-
-                oBoard.after($("<button>Celebrate</button>").click(function () {
-                    self.celebrate(1);
-                }));
-                oBoard.after($("<button>Clean Up</button>").click(function () {
-                    self.resetGame();
-                }));
 
                 for (var i = 0; i < 6; i++) {
                     arBoard[i] = [];
@@ -130,7 +129,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     function buildAddHandler(iColumn) {
         if (arAddHandlers[iColumn] === undefined) {
             arAddHandlers[iColumn] = function () {
-                if (!fnIsInputBlockedHandler()) self.addTile(iColumn);
+                self.addTile(iColumn);
             };
         }
 
@@ -152,6 +151,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     this.addTile = function (iColumn, bAITurn) {
+        if (fnIsInputBlockedHandler() && !bAITurn) return;
+
         //Reset game if over
         if (gameOver) {
             this.resetGame();
@@ -251,7 +252,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     this.resetGame = function () {
-        showDoesPlayerStartsDialog(function (playerBegins) {
+        showDoesPlayerStartsDialog(function () {
             fnNewGameHandler(function (aiTurnColumn_i) {
                 $(".tile").each(function (iIndx) {
                     var self = $(this);
