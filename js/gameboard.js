@@ -26,6 +26,7 @@ function TurnSummary(bAIWon, bPlayerWon, bRemi, sAITurn, arWinningStreak) {
 function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTurnHandler) {
     var self = this,
         arBoard = [],
+        arColumnNames = [],
         oBoard = $(sContainerId),
         moveCounter = 0,
         SLOT_HEIGHT,
@@ -115,6 +116,22 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             }
         }
 
+        for (var i = 0; i < 7; i++) {
+            var oColName = $("<div class='columnName'>").css({
+                position: "absolute",
+                top: SLOT_HEIGHT / 2,
+                left: "50%",
+                transform: "translate(-50%, -50%)"
+            }).text(String.fromCharCode(65 + i));
+
+            arColumnNames.push({
+                elem: oColName,
+                row: 0,
+                top: SLOT_HEIGHT / 2
+            });
+            arBoard[5][i].slot.append(oColName);
+        }
+
         showDoesPlayerStartsDialog(function () {
             fnNewGameHandler(function (aiTurnColumn_i) {
                 //Remove child nodes and loading class (during loading they might be used for displaying information)
@@ -191,6 +208,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             easing: "easeInOutCubic"
         });
 
+        moveColumnNameUpwards(iColumn);
+
         arBoard[iRow][iColumn] = {
             set: true,
             player: (moveCounter % 2 + 1)
@@ -204,6 +223,44 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         if (moveCounter === 42) {
             console.info("Game is over!");
         }
+    }
+
+    function moveColumnNameUpwards(iColumn) {
+        var columnName = arColumnNames[iColumn];
+
+        if (5 == columnName.row) {
+            columnName.elem.fadeOut();
+            return;
+        }
+
+        var newTop = columnName.top - SLOT_HEIGHT - BUMPER_SIZE;
+        columnName.top = newTop;
+
+        moveColumnName(columnName, newTop);
+
+        columnName.row++;
+    }
+
+    function resetColumnName(iColumn) {
+        var columnName = arColumnNames[iColumn];
+
+        columnName.elem.fadeIn();
+
+        var newTop = SLOT_HEIGHT / 2;
+        columnName.top = newTop;
+
+        moveColumnName(columnName, newTop);
+
+        columnName.row = 0;
+    }
+
+    function moveColumnName(oColumnName, iNewTop) {
+        oColumnName.elem.animate({
+            top: iNewTop + "px"
+        }, {
+            duration: "slow",
+            easing: "easeInOutCubic"
+        });
     }
 
     function indexToFieldName(iColumn, iRow ){
@@ -284,6 +341,10 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
 
                 moveCounter = 0;
                 gameOver = false;
+
+                for (var i = 0; i < 7; i++) {
+                    resetColumnName(i);
+                }
 
                 if (aiTurnColumn_i != undefined) {
                     self.addTile(aiTurnColumn_i, true);
