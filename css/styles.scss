@@ -78,7 +78,15 @@ body {
         .columnName {
           color: #aaaaaa;
           font-size: 50px;
+
+          &:hover {
+            color: $accentColor;
+          }
         }
+    }
+
+    .containsColumnName:hover {
+      background: $slotColor !important;
     }
 
     .tile {

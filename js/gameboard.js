@@ -129,7 +129,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
                 row: 0,
                 top: SLOT_HEIGHT / 2
             });
-            arBoard[5][i].slot.append(oColName);
+            arBoard[5][i].slot.addClass("containsColumnName").append(oColName);
         }
 
         showDoesPlayerStartsDialog(function () {
@@ -254,12 +254,13 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         columnName.row = 0;
     }
 
-    function moveColumnName(oColumnName, iNewTop) {
+    function moveColumnName(oColumnName, iNewTop, fnDone) {
         oColumnName.elem.animate({
             top: iNewTop + "px"
         }, {
             duration: "slow",
-            easing: "easeInOutCubic"
+            easing: "easeInOutCubic",
+
         });
     }
 
