@@ -22,7 +22,8 @@
     "jquery": "~2.1.1",
     "jquery-ui": "~1.11.1",
     "buzz": "~1.1.6",
-    "bootstrap": "~3.3.4"
+    "bootstrap": "~3.3.4",
+    "bootstrap3-dialog": "~1.34.2"
   },
   "resolutions": {
     "bootstrap": "~3.3.4"
