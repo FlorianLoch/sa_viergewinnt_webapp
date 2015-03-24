@@ -126,7 +126,6 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
 
             arColumnNames.push({
                 elem: oColName,
-                row: 0,
                 top: SLOT_HEIGHT / 2
             });
             arBoard[5][i].slot.addClass("containsColumnName").append(oColName);
@@ -237,8 +236,6 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         columnName.top = newTop;
 
         moveColumnName(columnName, newTop);
-
-        columnName.row++;
     }
 
     function resetColumnName(iColumn) {
@@ -250,8 +247,6 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         columnName.top = newTop;
 
         moveColumnName(columnName, newTop);
-
-        columnName.row = 0;
     }
 
     function moveColumnName(oColumnName, iNewTop, fnDone) {
