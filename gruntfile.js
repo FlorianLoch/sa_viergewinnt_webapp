@@ -30,7 +30,7 @@ module.exports = function(grunt) {
     },
     copy: {
       my_target: {
-        src: ['css/styles.css', 'sounds/*', 'img/*', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", "bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css", "bower_components/bootstrap/dist/css/bootstrap.min.css", "bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js", "bower_components/bootstrap/dist/js/bootstrap.min.js", 'index.html'],
+        src: ['css/styles.css', 'sounds/*', 'img/icon_small.png', 'bower_components/buzz/dist/buzz.min.js', 'bower_components/jquery/dist/jquery.min.js', "bower_components/jquery-ui/jquery-ui.min.js", "bower_components/bootstrap3-dialog/dist/css/bootstrap-dialog.min.css", "bower_components/bootstrap/dist/css/bootstrap.min.css", "bower_components/bootstrap3-dialog/dist/js/bootstrap-dialog.min.js", "bower_components/bootstrap/dist/js/bootstrap.min.js", 'index.html'],
         dest: 'dist/'
       }
     },
