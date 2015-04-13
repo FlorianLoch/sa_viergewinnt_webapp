@@ -47,9 +47,20 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     setUp();
 
     function showDoesPlayerStartsDialog(fnCallback) {
+        var aiAlgs = [
+            {name: "easyAI", desc: "Stupid"},
+            {name: "alphaBetaAI3", desc: "Easy"},
+            {name: "alphaBetaAI5", desc: "Average", checked: true},
+            {name: "alphaBetaAI8", desc: "Very hard"}
+        ];
+
+        var message = $("<div></div>").
+            append("<p>Please decide who should play the first turn!</p>").
+            append(createRadioBtns(aiAlgs));
+
         var dialog = new BootstrapDialog({
             title: 'Who shall begin?',
-            message: 'Please decide who should play the first turn!',
+            message: message,
             buttons: [{
                 label: 'Let me begin (1)',
                 action: function(dialog) {
@@ -72,6 +83,29 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         });
         dialog.open();
 
+        function createRadioBtns(aiAlgs_ar) {
+            var html = $("<div></div>");
+
+            aiAlgs_ar.forEach(function (item) {
+                item.radioBtn = $("<input type='radio' name='ai'>");
+
+                if (item.checked == true) {
+                    item.radioBtn.prop("checked", true);
+                }
+
+                var label = $("<label class='radio-inline'>" + item.desc + "</label>").prepend(item.radioBtn);
+                html.append(label);
+            });
+
+            return html;
+        }
+
+        function determineSelectedAiAlgorithm(aiAlgs_ar) {
+            for (var i = 0; i < aiAlgs_ar.length; i++) {
+                if (aiAlgs_ar[i].radioBtn.prop("checked")) return aiAlgs_ar[i].name;
+            }
+        }
+
         function closeDialogAndContinue(playerStarts) {
             dialog.close();
 
@@ -79,8 +113,10 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
                 playerStarts = (Math.random() < 0.5);
             }
 
+            var ai = determineSelectedAiAlgorithm(aiAlgs);
+
             playerBegins = playerStarts;
-            fnCallback(playerStarts);
+            fnNewGameHandler(fnCallback, playerStarts, ai);
         }
     }
 
@@ -131,15 +167,13 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
             arBoard[5][i].slot.addClass("containsColumnName").append(oColName);
         }
 
-        showDoesPlayerStartsDialog(function () {
-            fnNewGameHandler(function (aiTurnColumn_i) {
-                //Remove child nodes and loading class (during loading they might be used for displaying information)
-                oBoard.removeClass("loading");
+        showDoesPlayerStartsDialog(function (aiTurnColumn_i) {
+            //Remove child nodes and loading class (during loading they might be used for displaying information)
+            oBoard.removeClass("loading");
 
-                if (aiTurnColumn_i != undefined) {
-                    self.addTile(aiTurnColumn_i, true);
-                }
-            }, playerBegins);
+            if (aiTurnColumn_i != undefined) {
+                self.addTile(aiTurnColumn_i, true);
+            }
         });
     }
 
@@ -306,46 +340,44 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     }
 
     this.resetGame = function () {
-        showDoesPlayerStartsDialog(function () {
-            fnNewGameHandler(function (aiTurnColumn_i) {
-                $(".tile").each(function (iIndx) {
-                    var self = $(this);
-                    var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
+        showDoesPlayerStartsDialog(function (aiTurnColumn_i) {
+            $(".tile").each(function (iIndx) {
+                var self = $(this);
+                var coords = MathUtil.getRandomPlaceOnCircle(TOTAL_WIDTH / 2, TOTAL_HEIGHT / 2, TOTAL_WIDTH);
 
-                    self.animate({
-                        top: coords.y,
-                        left: coords.x,
-                        opacity: 0
-                    }, {
-                        duration: "slow",
-                        easing: "swing",
-                        done: function () {
-                            self.remove();
-                        }
-                    });
-                });
-
-                for (var i = 0; i < 6; i++) {
-                    arBoard[i] = [];
-                    for (var j = 0; j < 7; j++) {
-                        arBoard[i][j] = {
-                            slot: undefined,
-                            set: false
-                        };
+                self.animate({
+                    top: coords.y,
+                    left: coords.x,
+                    opacity: 0
+                }, {
+                    duration: "slow",
+                    easing: "swing",
+                    done: function () {
+                        self.remove();
                     }
-                }
+                });
+            });
 
-                moveCounter = 0;
-                gameOver = false;
-
-                for (var i = 0; i < 7; i++) {
-                    resetColumnName(i);
+            for (var i = 0; i < 6; i++) {
+                arBoard[i] = [];
+                for (var j = 0; j < 7; j++) {
+                    arBoard[i][j] = {
+                        slot: undefined,
+                        set: false
+                    };
                 }
+            }
 
-                if (aiTurnColumn_i != undefined) {
-                    self.addTile(aiTurnColumn_i, true);
-                }
-            }, playerBegins);
+            moveCounter = 0;
+            gameOver = false;
+
+            for (var i = 0; i < 7; i++) {
+                resetColumnName(i);
+            }
+
+            if (aiTurnColumn_i != undefined) {
+                self.addTile(aiTurnColumn_i, true);
+            }
         });
     };
 }

@@ -20,7 +20,7 @@ $(function () {
         blockInput = false;
     });
 
-    function newGameHandler(fnCallback, playerBegins) {
+    function newGameHandler(fnCallback, playerBegins, ai) {
         $.ajax({
             url: BASE_URL + "/game",
             success: function (data) {
@@ -47,7 +47,7 @@ $(function () {
             },
             data: JSON.stringify({
                 player_begins: playerBegins,
-                ai_algorithm: "alphaBetaAI" //other possibilities would be: easyAI_noRandom, easyAI
+                ai_algorithm: ai
             }),
             contentType: "application/json",
             type: "PUT"
