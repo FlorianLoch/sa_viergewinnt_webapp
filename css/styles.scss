@@ -65,6 +65,19 @@ body {
   text-align: center;
 }
 
+.bootstrap-dialog-message {
+  text-align: center;
+
+  .radio-inline {
+    margin-right: 50px;
+  }
+
+  .radio-inline:last-of-type {
+    margin-right: 0px;
+  }
+}
+
+
 .jsConnect4Board {
     position: relative;
     width: $boardWidth;

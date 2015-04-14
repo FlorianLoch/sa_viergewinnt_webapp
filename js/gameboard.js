@@ -55,7 +55,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         ];
 
         var message = $("<div></div>").
-            append("<p>Please decide who should play the first turn!</p>").
+            append("<p>Please choose your opponent and decide who should play first!</p>").
             append(createRadioBtns(aiAlgs));
 
         var dialog = new BootstrapDialog({
