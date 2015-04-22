@@ -162,7 +162,8 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
 
             arColumnNames.push({
                 elem: oColName,
-                top: SLOT_HEIGHT / 2
+                top: SLOT_HEIGHT / 2,
+                row: 0
             });
             arBoard[5][i].slot.addClass("containsColumnName").append(oColName);
         }
@@ -261,7 +262,9 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
     function moveColumnNameUpwards(iColumn) {
         var columnName = arColumnNames[iColumn];
 
-        if (5 == columnName.row) {
+        columnName.row++;
+
+        if (6 == columnName.row) {
             columnName.elem.fadeOut();
             return;
         }
@@ -279,6 +282,7 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
 
         var newTop = SLOT_HEIGHT / 2;
         columnName.top = newTop;
+        columnName.row = 0;
 
         moveColumnName(columnName, newTop);
     }
@@ -289,7 +293,6 @@ function Gameboard(sContainerId, fnIsInputBlockedHandler, fnNewGameHandler, fnTu
         }, {
             duration: "slow",
             easing: "easeInOutCubic",
-
         });
     }
 
